@@ -1,3 +1,3 @@
 run:
-	go generate
-	go run main.go
+	go generate ./...
+	go run cmd/petstore.go

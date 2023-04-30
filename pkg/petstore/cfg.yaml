@@ -1,4 +1,4 @@
-package: api
+package: petstore
 generate:
   chi-server: true
   models: true

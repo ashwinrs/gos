@@ -1,6 +1,6 @@
 //go:generate go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen --config=cfg.yaml ./petstore.yaml
 
-package api
+package petstore
 
 import (
 	"encoding/json"
@@ -37,8 +37,8 @@ func sendPetStoreError(w http.ResponseWriter, code int, message string) {
 	json.NewEncoder(w).Encode(petErr)
 }
 
-// FindPets implements all the handlers in the ServerInterface
-func (p *PetStore) FindPets(w http.ResponseWriter, r *http.Request, params FindPetsParams) {
+// GetPets implements all the handlers in the ServerInterface
+func (p *PetStore) GetPets(w http.ResponseWriter, r *http.Request, params GetPetsParams) {
 	p.Lock.Lock()
 	defer p.Lock.Unlock()
 
