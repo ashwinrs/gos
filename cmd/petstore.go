@@ -35,6 +35,7 @@ func main() {
 
 	// Migrate the schema
 	db.AutoMigrate(&models.InsuranceEntity{})
+	db.AutoMigrate(&models.PatientEntity{})
 
 	// Create an instance of our handler which satisfies the generated interface
 	petStore := petstore.NewPetStoreHandler(db)

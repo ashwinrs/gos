@@ -25,6 +25,84 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /patients:
+    get:
+      summary: Returns all patients
+      description: |
+        Returns all patients
+      operationId: getPatients
+      responses:
+        '200':
+          description: patients response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Patient'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Creates a new patient
+      description: Creates a new patient
+      operationId: addPatient
+      requestBody:
+        description: patient that needs to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPatient'
+      responses:
+        '200':
+          description: patient response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /patients/{id}:
+    put:
+      summary: update a patient by ID
+      description: update a patient based on a single ID
+      operationId: updatePatientByID
+      parameters:
+        - name: id
+          in: path
+          description: ID of patient to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: patient that needs to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPatient'
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     Insurance:
@@ -39,6 +117,60 @@ components:
         name:
           type: string
           description: Name of the insurance
+    NewPatient:
+      required:
+        - name
+        - email
+        - phone
+        - insuranceId
+        - dob
+      properties:
+        name:
+          type: string
+          description: Name of the patient
+        email:
+          type: string
+          description: Email of the patient
+        phone:
+          type: string
+          description: Phone of the patient
+        insuranceId:
+          type: integer
+          format: int64
+          description: Insurance ID of the patient
+        dob:
+          type: string
+          format: date-time
+          description: Date of birth of the patient
+    Patient:
+      required:
+        - id
+        - name
+        - email
+        - phone
+        - insurance
+        - dob
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique id of the patient
+        name:
+          type: string
+          description: Name of the patient
+        email:
+          type: string
+          description: Email of the patient
+        phone:
+          type: string
+          description: Phone of the patient
+        insurance:
+          type: string
+          description: Insurance name of the patient
+        dob:
+          type: string
+          format: date-time
+          description: Date of birth of the patient
     Error:
       required:
         - code

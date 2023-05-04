@@ -6,7 +6,9 @@ package petstore
 import (
 	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -28,11 +30,65 @@ type Insurance struct {
 	Name string `json:"name"`
 }
 
+// NewPatient defines model for NewPatient.
+type NewPatient struct {
+	// Dob Date of birth of the patient
+	Dob time.Time `json:"dob"`
+
+	// Email Email of the patient
+	Email string `json:"email"`
+
+	// InsuranceId Insurance ID of the patient
+	InsuranceId int64 `json:"insuranceId"`
+
+	// Name Name of the patient
+	Name string `json:"name"`
+
+	// Phone Phone of the patient
+	Phone string `json:"phone"`
+}
+
+// Patient defines model for Patient.
+type Patient struct {
+	// Dob Date of birth of the patient
+	Dob time.Time `json:"dob"`
+
+	// Email Email of the patient
+	Email string `json:"email"`
+
+	// Id Unique id of the patient
+	Id int64 `json:"id"`
+
+	// Insurance Insurance name of the patient
+	Insurance string `json:"insurance"`
+
+	// Name Name of the patient
+	Name string `json:"name"`
+
+	// Phone Phone of the patient
+	Phone string `json:"phone"`
+}
+
+// AddPatientJSONRequestBody defines body for AddPatient for application/json ContentType.
+type AddPatientJSONRequestBody = NewPatient
+
+// UpdatePatientByIDJSONRequestBody defines body for UpdatePatientByID for application/json ContentType.
+type UpdatePatientByIDJSONRequestBody = NewPatient
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Returns all insurances
 	// (GET /insurances)
 	GetInsurances(w http.ResponseWriter, r *http.Request)
+	// Returns all patients
+	// (GET /patients)
+	GetPatients(w http.ResponseWriter, r *http.Request)
+	// Creates a new patient
+	// (POST /patients)
+	AddPatient(w http.ResponseWriter, r *http.Request)
+	// update a patient by ID
+	// (PUT /patients/{id})
+	UpdatePatientByID(w http.ResponseWriter, r *http.Request, id int64)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -50,6 +106,62 @@ func (siw *ServerInterfaceWrapper) GetInsurances(w http.ResponseWriter, r *http.
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetInsurances(w, r)
+	})
+
+	for i := len(siw.HandlerMiddlewares) - 1; i >= 0; i-- {
+		handler = siw.HandlerMiddlewares[i](handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetPatients operation middleware
+func (siw *ServerInterfaceWrapper) GetPatients(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetPatients(w, r)
+	})
+
+	for i := len(siw.HandlerMiddlewares) - 1; i >= 0; i-- {
+		handler = siw.HandlerMiddlewares[i](handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// AddPatient operation middleware
+func (siw *ServerInterfaceWrapper) AddPatient(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AddPatient(w, r)
+	})
+
+	for i := len(siw.HandlerMiddlewares) - 1; i >= 0; i-- {
+		handler = siw.HandlerMiddlewares[i](handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// UpdatePatientByID operation middleware
+func (siw *ServerInterfaceWrapper) UpdatePatientByID(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int64
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "id", runtime.ParamLocationPath, chi.URLParam(r, "id"), &id)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdatePatientByID(w, r, id)
 	})
 
 	for i := len(siw.HandlerMiddlewares) - 1; i >= 0; i-- {
@@ -174,6 +286,15 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/insurances", wrapper.GetInsurances)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/patients", wrapper.GetPatients)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/patients", wrapper.AddPatient)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/patients/{id}", wrapper.UpdatePatientByID)
 	})
 
 	return r
