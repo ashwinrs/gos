@@ -2,23 +2,23 @@ openapi: "3.0.0"
 info:
   version: 1.0.0
   title: Petstore
-  description: A sample API that uses a petstore as an example to demonstrate features in the OpenAPI 3.0 specification
+  description: A sample API for an internal tool in Nogginway
 paths:
-  /pets:
+  /insurances:
     get:
-      summary: Returns all pets
+      summary: Returns all insurances
       description: |
-        Returns all pets
-      operationId: getPets
+        Returns all insurances
+      operationId: getInsurances
       responses:
         '200':
-          description: pet response
+          description: insurance response
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Pet'
+                  $ref: '#/components/schemas/Insurance'
         default:
           description: unexpected error
           content:
@@ -27,7 +27,7 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    Pet:
+    Insurance:
       required:
         - id
         - name
@@ -35,13 +35,10 @@ components:
         id:
           type: integer
           format: int64
-          description: Unique id of the pet
+          description: Unique id of the insurance
         name:
           type: string
-          description: Name of the pet
-        tag:
-          type: string
-          description: Type of the pet
+          description: Name of the insurance
     Error:
       required:
         - code

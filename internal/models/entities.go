@@ -2,9 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
-type PetEntity struct {
+type InsuranceEntity struct {
 	gorm.Model
-	Id   int64
 	Name string
-	Tag  *string
 }

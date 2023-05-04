@@ -19,23 +19,20 @@ type Error struct {
 	Message string `json:"message"`
 }
 
-// Pet defines model for Pet.
-type Pet struct {
-	// Id Unique id of the pet
+// Insurance defines model for Insurance.
+type Insurance struct {
+	// Id Unique id of the insurance
 	Id int64 `json:"id"`
 
-	// Name Name of the pet
+	// Name Name of the insurance
 	Name string `json:"name"`
-
-	// Tag Type of the pet
-	Tag *string `json:"tag,omitempty"`
 }
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Returns all pets
-	// (GET /pets)
-	GetPets(w http.ResponseWriter, r *http.Request)
+	// Returns all insurances
+	// (GET /insurances)
+	GetInsurances(w http.ResponseWriter, r *http.Request)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -47,12 +44,12 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
-// GetPets operation middleware
-func (siw *ServerInterfaceWrapper) GetPets(w http.ResponseWriter, r *http.Request) {
+// GetInsurances operation middleware
+func (siw *ServerInterfaceWrapper) GetInsurances(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetPets(w, r)
+		siw.Handler.GetInsurances(w, r)
 	})
 
 	for i := len(siw.HandlerMiddlewares) - 1; i >= 0; i-- {
@@ -176,7 +173,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/pets", wrapper.GetPets)
+		r.Get(options.BaseURL+"/insurances", wrapper.GetInsurances)
 	})
 
 	return r

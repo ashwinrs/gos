@@ -27,8 +27,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// i1 := models.InsuranceEntity{Name: "oscar"}
+	// i2 := models.InsuranceEntity{Name: "cigna"}
+	// i3 := models.InsuranceEntity{Name: "Aetna"}
+	// insur := []models.InsuranceEntity{i1, i2, i3}
+	// db.Create(&insur)
+
 	// Migrate the schema
-	db.AutoMigrate(&models.PetEntity{})
+	db.AutoMigrate(&models.InsuranceEntity{})
 
 	// Create an instance of our handler which satisfies the generated interface
 	petStore := petstore.NewPetStoreHandler(db)
